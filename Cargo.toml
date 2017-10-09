@@ -5,3 +5,4 @@ authors = ["Dominik Winecki <dominikwinecki@gmail.com>"]
 
 [dependencies]
 png = "*"
+num = "*"

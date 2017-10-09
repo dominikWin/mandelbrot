@@ -1,6 +1,9 @@
 extern crate png;
+extern crate num;
 
 use std::f32;
+use num::Complex;
+use num::complex::*;
 
 use std::path::Path;
 use std::fs::File;
@@ -45,5 +48,15 @@ fn main() {
 }
 
 fn val(x: f32, y: f32) -> f32 {
-    (x*x+y*y).sqrt() / (2.0f32).sqrt()
+    let z0 = Complex32::new(0.0, 0.0);
+    let c = Complex32::new(x, y);
+    let mut z = z0;
+    const MAX_ITERS: u32 = 100;
+    for i in 1..MAX_ITERS {
+        z = z.powf(2.0) + c;
+        if z.norm() > 2.0 {
+            return (i as f32) / (MAX_ITERS as f32);
+        }
+    }
+    1.0
 }
