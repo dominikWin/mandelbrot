@@ -1,5 +1,7 @@
 extern crate png;
 
+use std::f32;
+
 use std::path::Path;
 use std::fs::File;
 use std::io::BufWriter;
@@ -10,8 +12,8 @@ fn main() {
     let file = File::create(path).unwrap();
     let ref mut w = BufWriter::new(file);
 
-    const WIDTH: u32 = 64;
-    const HEIGHT: u32 = 64;
+    const WIDTH: u32 = 128;
+    const HEIGHT: u32 = 128;
 
     let mut encoder = png::Encoder::new(w, WIDTH, HEIGHT);
     encoder.set(png::ColorType::RGBA).set(png::BitDepth::Eight);
@@ -43,5 +45,5 @@ fn main() {
 }
 
 fn val(x: f32, y: f32) -> f32 {
-    if x < 0.0 {0.0} else {if y < 0.0 {0.25} else {0.75}}
+    (x*x+y*y).sqrt() / (2.0f32).sqrt()
 }
