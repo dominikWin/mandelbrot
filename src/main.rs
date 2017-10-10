@@ -2,7 +2,6 @@ extern crate png;
 extern crate num;
 
 use std::f32;
-use num::Complex;
 use num::complex::*;
 
 use std::path::Path;
@@ -15,23 +14,21 @@ fn main() {
     let file = File::create(path).unwrap();
     let ref mut w = BufWriter::new(file);
 
-    const WIDTH: u32 = 128;
-    const HEIGHT: u32 = 128;
-
+    const WIDTH: u32 = 10240;
+    const HEIGHT: u32 = 8192;
+    const ARRAY_LEN: usize = (4 * WIDTH * HEIGHT) as usize; 
     let mut encoder = png::Encoder::new(w, WIDTH, HEIGHT);
     encoder.set(png::ColorType::RGBA).set(png::BitDepth::Eight);
     let mut writer = encoder.write_header().unwrap();
 
-    let mut data = [0u8; (4 * WIDTH * HEIGHT) as usize];
+    let mut data = vec![0u8; ARRAY_LEN];
+
+    let mut percent_done = 0;
     for w in 0..WIDTH {
         for h in 0..HEIGHT {
             let pointer = ((w + WIDTH * h) * 4) as usize;
-            let x = ((w as f32) / (WIDTH as f32)) * 2f32 - 1f32;
-            let y = (((HEIGHT - h) as f32) / (HEIGHT as f32)) * 2f32 - 1f32;
-            assert!(x >= -1f32);
-            assert!(y >= -1f32);
-            assert!(x <= 1f32);
-            assert!(y <= 1f32);
+            let x = ((((w as f32) / (WIDTH as f32)) -0.6) * 2.0f32*1.5f32) * 1.2;
+            let y = (((((HEIGHT - h) as f32) / (HEIGHT as f32)) -0.5) * 2.0f32) * 1.2;
             let val = val(x, y);
             assert!(val >= 0f32);
             assert!(val <= 1f32);
@@ -43,6 +40,12 @@ fn main() {
             data[pointer + 2] = b;
             data[pointer + 3] = 255;
         }
+
+        let pd = w * 100 / WIDTH;
+        if pd > percent_done {
+            percent_done = pd;
+            println!("{}% done", percent_done);
+        }
     }
     writer.write_image_data(&data).unwrap();
 }
@@ -51,7 +54,7 @@ fn val(x: f32, y: f32) -> f32 {
     let z0 = Complex32::new(0.0, 0.0);
     let c = Complex32::new(x, y);
     let mut z = z0;
-    const MAX_ITERS: u32 = 100;
+    const MAX_ITERS: u32 = 35;
     for i in 1..MAX_ITERS {
         z = z.powf(2.0) + c;
         if z.norm() > 2.0 {
