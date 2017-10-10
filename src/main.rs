@@ -53,11 +53,11 @@ fn val(x: f32, y: f32) -> f32 {
     let z0 = Complex32::new(0.0, 0.0);
     let c = Complex32::new(x, y);
     let mut z = z0;
-    const MAX_ITERS: u32 = 35;
+    const MAX_ITERS: u32 = 1000;
     for i in 1..MAX_ITERS {
         z = z.powf(2.0) + c;
         if z.norm() > 2.0 {
-            return (i as f32) / (MAX_ITERS as f32);
+            return (((i as f32) / (MAX_ITERS as f32))).powf(0.25);
         }
     }
     1.0
