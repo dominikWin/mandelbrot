@@ -16,9 +16,9 @@ fn main() {
 
     const WIDTH: u32 = 10240;
     const HEIGHT: u32 = 8192;
-    const ARRAY_LEN: usize = (4 * WIDTH * HEIGHT) as usize; 
+    const ARRAY_LEN: usize = (3 * WIDTH * HEIGHT) as usize;
     let mut encoder = png::Encoder::new(w, WIDTH, HEIGHT);
-    encoder.set(png::ColorType::RGBA).set(png::BitDepth::Eight);
+    encoder.set(png::ColorType::RGB).set(png::BitDepth::Eight);
     let mut writer = encoder.write_header().unwrap();
 
     let mut data = vec![0u8; ARRAY_LEN];
@@ -26,7 +26,7 @@ fn main() {
     let mut percent_done = 0;
     for w in 0..WIDTH {
         for h in 0..HEIGHT {
-            let pointer = ((w + WIDTH * h) * 4) as usize;
+            let pointer = ((w + WIDTH * h) * 3) as usize;
             let x = ((((w as f32) / (WIDTH as f32)) -0.6) * 2.0f32*1.5f32) * 1.2;
             let y = (((((HEIGHT - h) as f32) / (HEIGHT as f32)) -0.5) * 2.0f32) * 1.2;
             let val = val(x, y);
@@ -38,7 +38,6 @@ fn main() {
             data[pointer] = r;
             data[pointer + 1] = g;
             data[pointer + 2] = b;
-            data[pointer + 3] = 255;
         }
 
         let pd = w * 100 / WIDTH;
