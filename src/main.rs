@@ -10,15 +10,20 @@ use std::fs::File;
 use std::io::BufWriter;
 use png::HasParameters;
 
-const MAX_ITERS: u32 = 64;
+const MAX_ITERS: u32 = 250;
+
+const WIDTH: u32 = 10240/5;
+const HEIGHT: u32 = 8192/5;
+const LEFT_TOP_X: f32 = -2.0;
+const LEFT_TOP_Y: f32 = 1.5;
+const RIGHT_BOTTOM_X: f32 = 1.0;
+const RIGHT_BOTTOM_Y: f32 = -1.5;
 
 fn main() {
     let path = Path::new(r"image.png");
     let file = File::create(path).unwrap();
     let ref mut w = BufWriter::new(file);
 
-    const WIDTH: u32 = 10240;
-    const HEIGHT: u32 = 8192;
     const ARRAY_LEN: usize = (3 * WIDTH * HEIGHT) as usize;
     let mut encoder = png::Encoder::new(w, WIDTH, HEIGHT);
     encoder.set(png::ColorType::RGB).set(png::BitDepth::Eight);
@@ -26,12 +31,15 @@ fn main() {
 
     let mut data = vec![0u8; ARRAY_LEN];
 
+    let math_width: f32 = (LEFT_TOP_X - RIGHT_BOTTOM_X).abs();
+    let math_height: f32 = (LEFT_TOP_Y - RIGHT_BOTTOM_Y).abs();
+
     let mut percent_done = 0;
     for w in 0..WIDTH {
         for h in 0..HEIGHT {
             let pointer = ((w + WIDTH * h) * 3) as usize;
-            let x = ((((w as f32) / (WIDTH as f32)) -0.6) * 2.0f32*1.5f32) * 1.2;
-            let y = (((((HEIGHT - h) as f32) / (HEIGHT as f32)) -0.5) * 2.0f32) * 1.2;
+            let x = LEFT_TOP_X + ((w as f32) / (WIDTH as f32)) * math_width;
+            let y = LEFT_TOP_Y - ((HEIGHT - h) as f32) / (HEIGHT as f32) * math_height;
             let val = val(x, y);
             assert!(val >= 0f32);
             assert!(val <= 1f32);
