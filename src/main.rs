@@ -10,14 +10,14 @@ use std::fs::File;
 use std::io::BufWriter;
 use png::HasParameters;
 
-const MAX_ITERS: u32 = 250;
+const MAX_ITERS: u32 = 350;
 
-const WIDTH: u32 = 10240/5;
-const HEIGHT: u32 = 8192/5;
-const LEFT_TOP_X: f32 = -2.0;
-const LEFT_TOP_Y: f32 = 1.5;
-const RIGHT_BOTTOM_X: f32 = 1.0;
-const RIGHT_BOTTOM_Y: f32 = -1.5;
+const WIDTH: u32 = 8192;
+const HEIGHT: u32 = 8192;
+
+const CENTER_X: f32 = -0.74529;
+const CENTER_Y: f32 = 0.113075;
+const R: f32 = 1.5E-4;
 
 fn main() {
     let path = Path::new(r"image.png");
@@ -30,6 +30,11 @@ fn main() {
     let mut writer = encoder.write_header().unwrap();
 
     let mut data = vec![0u8; ARRAY_LEN];
+
+    let LEFT_TOP_X: f32 = CENTER_X - R;
+    let LEFT_TOP_Y: f32 = CENTER_Y + R;
+    let RIGHT_BOTTOM_X: f32 = CENTER_X + R;
+    let RIGHT_BOTTOM_Y: f32 = CENTER_Y - R;
 
     let math_width: f32 = (LEFT_TOP_X - RIGHT_BOTTOM_X).abs();
     let math_height: f32 = (LEFT_TOP_Y - RIGHT_BOTTOM_Y).abs();
@@ -68,7 +73,7 @@ fn main() {
 fn val(x: f32, y: f32) -> f32 {
     let iters = get_iterations(x, y);
     if let Some(its) = iters {
-        (its as f32).sin().abs()
+        (its as f32 / MAX_ITERS as f32).powf(0.93)
     } else {
         1.0
     }
