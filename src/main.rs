@@ -9,15 +9,15 @@ use std::fs::File;
 use std::io::BufWriter;
 use png::HasParameters;
 
-const MAX_ITERS: u32 = 1000;
+const MAX_ITERS: u32 = 200;
 
 fn main() {
     let path = Path::new(r"image.png");
     let file = File::create(path).unwrap();
     let ref mut w = BufWriter::new(file);
 
-    const WIDTH: u32 = 10240/4;
-    const HEIGHT: u32 = 8192/4;
+    const WIDTH: u32 = 10240;
+    const HEIGHT: u32 = 8192;
     const ARRAY_LEN: usize = (3 * WIDTH * HEIGHT) as usize;
     let mut encoder = png::Encoder::new(w, WIDTH, HEIGHT);
     encoder.set(png::ColorType::RGB).set(png::BitDepth::Eight);
@@ -54,7 +54,7 @@ fn main() {
 fn val(x: f32, y: f32) -> f32 {
     let iters = get_iterations(x, y);
     if let Some(its) = iters {
-        ((its as f32) / (MAX_ITERS as f32)).powf(0.25)
+        (its as f32).sin().abs()
     } else {
         1.0
     }
