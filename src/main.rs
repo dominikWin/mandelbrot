@@ -12,8 +12,8 @@ use png::HasParameters;
 
 const MAX_ITERS: u32 = 350;
 
-const WIDTH: u32 = 8192;
-const HEIGHT: u32 = 8192;
+const WIDTH: u32 = 8192/2;
+const HEIGHT: u32 = 8192/2;
 
 const CENTER_X: f32 = -0.74529;
 const CENTER_Y: f32 = 0.113075;
@@ -24,9 +24,9 @@ fn main() {
     let file = File::create(path).unwrap();
     let ref mut w = BufWriter::new(file);
 
-    const ARRAY_LEN: usize = (3 * WIDTH * HEIGHT) as usize;
+    const ARRAY_LEN: usize = (WIDTH * HEIGHT) as usize;
     let mut encoder = png::Encoder::new(w, WIDTH, HEIGHT);
-    encoder.set(png::ColorType::RGB).set(png::BitDepth::Eight);
+    encoder.set(png::ColorType::Grayscale).set(png::BitDepth::Eight);
     let mut writer = encoder.write_header().unwrap();
 
     let mut data = vec![0u8; ARRAY_LEN];
@@ -42,18 +42,14 @@ fn main() {
     let mut percent_done = 0;
     for w in 0..WIDTH {
         for h in 0..HEIGHT {
-            let pointer = ((w + WIDTH * h) * 3) as usize;
+            let pointer = (w + WIDTH * h) as usize;
             let x = LEFT_TOP_X + ((w as f32) / (WIDTH as f32)) * math_width;
             let y = LEFT_TOP_Y - ((HEIGHT - h) as f32) / (HEIGHT as f32) * math_height;
             let val = val(x, y);
             assert!(val >= 0f32);
             assert!(val <= 1f32);
-            let r = (255f32 * val) as u8;
-            let g = (255f32 * val) as u8;
-            let b = (255f32 * val) as u8;
-            data[pointer] = r;
-            data[pointer + 1] = g;
-            data[pointer + 2] = b;
+            let v = (255f32 * val) as u8;
+            data[pointer] = v;
         }
 
         let pd = w * 1000 / WIDTH;
