@@ -3,13 +3,14 @@ extern crate num;
 
 use std::f32;
 use num::complex::*;
+use std::io::*;
 
 use std::path::Path;
 use std::fs::File;
 use std::io::BufWriter;
 use png::HasParameters;
 
-const MAX_ITERS: u32 = 200;
+const MAX_ITERS: u32 = 64;
 
 fn main() {
     let path = Path::new(r"image.png");
@@ -42,12 +43,17 @@ fn main() {
             data[pointer + 2] = b;
         }
 
-        let pd = w * 100 / WIDTH;
+        let pd = w * 1000 / WIDTH;
         if pd > percent_done {
             percent_done = pd;
-            println!("{}% done", percent_done);
+            print!(".");
+            std::io::stdout().flush().unwrap();
+            if pd % 100 == 0 {
+                print!(" {}%\n", pd / 10);
+            }
         }
     }
+    print!(" {}%\n", 100);
     writer.write_image_data(&data).unwrap();
 }
 
