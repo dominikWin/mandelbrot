@@ -54,7 +54,7 @@ fn main() {
 fn val(x: f32, y: f32) -> f32 {
     let iters = get_iterations(x, y);
     if let Some(its) = iters {
-        (((its as f32) / (MAX_ITERS as f32))).powf(0.25)
+        ((its as f32) / (MAX_ITERS as f32)).powf(0.25)
     } else {
         1.0
     }
